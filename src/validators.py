@@ -37,7 +37,10 @@ class SalesDataValidator:
         if missing:
             raise ValueError(f"missing required fields: {', '.join(missing)}")
 
-        if any(not str(record[field]).strip() for field in self.REQUIRED_FIELDS):
+        if any(
+            record[field] is None or not str(record[field]).strip()
+            for field in self.REQUIRED_FIELDS
+        ):
             raise ValueError("required fields must not be blank")
 
         order_date_text = str(record["order_date"])
