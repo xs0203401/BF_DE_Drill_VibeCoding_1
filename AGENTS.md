@@ -30,3 +30,13 @@ Pull requests should explain the change, identify affected files or requirements
 ## Security & Configuration Tips
 
 Do not commit credentials, private data, or local environment files. Treat the project brief as the source of truth for required behavior, and review any external dependencies before adding them.
+
+# Project Rules
+
+## ADHD Executive Function Constraints
+
+- Ignore all conversational greetings, intros, and conversational filler.
+- Put the direct answer, code block, or terminal command on the very first line of your response.
+- Do not explain why code works unless explicitly asked to do so.
+- For multi-step tasks, output only the first 1-2 immediate micro-steps.
+- Omit all conversational postambles and polite closers. Stop generating immediately when the technical answer is complete.
