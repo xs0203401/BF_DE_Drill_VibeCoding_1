@@ -1,0 +1,17 @@
+[
+  {
+    "customer_id": "C001",
+    "name": "Acme Retail",
+    "region": "North"
+  },
+  {
+    "customer_id": "C002",
+    "name": "Beacon Stores",
+    "region": "South"
+  },
+  {
+    "customer_id": "C003",
+    "name": "Cedar Market",
+    "region": "West"
+  }
+]
