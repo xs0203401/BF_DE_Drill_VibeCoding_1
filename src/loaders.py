@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import psycopg2
-from psycopg2.extras import execute_values
+from psycopg2.extras import Json, execute_values
 
 from .models import Customer, FactSalesRecord, Product, RejectedRecord
 
@@ -40,15 +40,49 @@ class PostgreSQLLoader:
             with connection.cursor() as cursor:
                 cursor.execute(schema_sql)
 
+    def load_staging(self, records: Iterable[dict[str, Any]]) -> None:
+        """Refresh the raw sales landing table for the current pipeline run."""
+        records = list(records)
+        if not records:
+            return
+
+        with psycopg2.connect(**self.connection_kwargs) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("TRUNCATE TABLE stg_sales, ctl_rejected_sales")
+                execute_values(
+                    cursor,
+                    """
+                    INSERT INTO stg_sales (
+                        order_id, order_date, customer_id, product_id,
+                        quantity, unit_price, discount_rate
+                    )
+                    VALUES %s
+                    """,
+                    [
+                        (
+                            record.get("order_id"),
+                            record.get("order_date"),
+                            record.get("customer_id"),
+                            record.get("product_id"),
+                            record.get("quantity"),
+                            record.get("unit_price"),
+                            record.get("discount_rate"),
+                        )
+                        for record in records
+                    ],
+                )
+
     def load(
         self,
         customers: Iterable[Customer],
         products: Iterable[Product],
         sales: Iterable[FactSalesRecord],
+        rejected: Iterable[RejectedRecord] = (),
     ) -> None:
         customers = list(customers)
         products = list(products)
         sales = list(sales)
+        rejected = list(rejected)
 
         with psycopg2.connect(**self.connection_kwargs) as connection:
             with connection.cursor() as cursor:
@@ -109,6 +143,22 @@ class PostgreSQLLoader:
                         for item in sales
                     ],
                 )
+                if rejected:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO ctl_rejected_sales (order_id, reason, raw_record)
+                        VALUES %s
+                        """,
+                        [
+                            (
+                                item.raw_record.get("order_id"),
+                                item.reason,
+                                Json(item.raw_record),
+                            )
+                            for item in rejected
+                        ],
+                    )
 
     def close(self) -> None:
         """Retained for API compatibility; connections are context-managed per operation."""

@@ -92,7 +92,8 @@ class SalesPipeline:
                 port=self.config.port,
             )
             loader.create_schema(self.config.schema_path)
-            loader.load(customers, products, facts)
+            loader.load_staging(raw_sales)
+            loader.load(customers, products, facts, rejected_sales)
 
         return PipelineSummary(
             extracted_sales=len(raw_sales),
