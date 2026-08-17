@@ -1,0 +1,6 @@
+reason,order_id,order_date,customer_id,product_id,quantity,unit_price,discount_rate
+unknown customer_id: C999,O1005,2023-01-12,C999,P001,3,4.50,0.05
+unknown product_id: P999,O1006,2023-01-15,C002,P999,1,32.00,0.00
+quantity must be greater than zero,O1007,2023-01-18,C003,P002,0,32.00,0.00
+unit_price must be greater than zero,O1008,2023-01-20,C001,P001,2,-4.50,0.00
+order_date must use YYYY-MM-DD format,O1009,2023/01/22,C002,P003,5,12.75,0.05
